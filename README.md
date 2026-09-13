@@ -12,4 +12,4 @@ The file `Prompt_Instructions.md` contains the full specification used to genera
 
 1. *"Make a vocab check about network topologies for Year 10 OCR Computer Science."*
 2. *"Make a vocab check about SQL and databases for Year 12 OCR A Level."*
-3. *"Make a vocab check about primary and secondary storage for Year 9."*
+3. *"Make a vocab check about primary and secondary storage for Year 11 OCR Computer Science."*
