@@ -10,6 +10,8 @@ The file `Prompt_Instructions.md` contains the full specification used to genera
 
 ### Example prompts to try:
 
-1. *"Make a vocab check about network topologies for Year 10 OCR Computer Science."*
-2. *"Make a vocab check about SQL and databases for Year 12 OCR A Level."*
-3. *"Make a vocab check about primary and secondary storage for Year 11 OCR Computer Science."*
+1. *"My Year 10s need a vocab sheet, week one about Boolean logic, gates, truth tables and expressions suitable for OCR j277 level."*
+
+2. *"Make a vocab check about network topologies for Year 10 OCR Computer Science."*
+
+3. *"I've pasted a chapter about cyber security below. Create a vocab check from it for Year 12.\n[pasted text]"*
