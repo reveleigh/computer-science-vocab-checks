@@ -1,172 +1,295 @@
 <!DOCTYPE html>
 <html lang="en-GB">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vocab Check — Boolean Logic</title>
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
-    background: #f5f7fa;
-    color: #1a1a2e;
-    padding: 2rem 1.5rem;
-    line-height: 1.65;
-  }
-  .worksheet {
-    max-width: 800px;
-    margin: 0 auto;
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-    padding: 2rem 2.5rem;
-  }
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    border-bottom: 2px solid #e0e0e0;
-    padding-bottom: 0.75rem;
-    margin-bottom: 1.5rem;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-  .header h1 { font-size: 1.25rem; font-weight: 600; color: #16213e; }
-  .score { font-size: 1.1rem; font-weight: 600; color: #0f3460; }
-  .controls {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 1.25rem;
-    flex-wrap: wrap;
-  }
-  .controls button {
-    padding: 0.5rem 1rem;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    background: #f0f0f0;
-    font-size: 0.875rem;
-    cursor: pointer;
-    transition: background 0.15s;
-  }
-  .controls button:hover { background: #e0e0e0; }
-  .controls button.print-btn { background: #16213e; color: #fff; border-color: #16213e; }
-  .controls button.print-btn:hover { background: #0f3460; }
-  .passage {
-    font-size: 1.05rem;
-    line-height: 1.8;
-    text-align: justify;
-    margin-bottom: 1.5rem;
-  }
-  .blank {
-    display: inline-block;
-    border-bottom: 2px solid #0f3460;
-    min-width: 9rem;
-    padding: 0 0.25rem;
-    text-align: center;
-    font-weight: 500;
-    color: #0f3460;
-    cursor: pointer;
-    position: relative;
-    transition: background 0.15s;
-  }
-  .blank:hover { background: #eef4ff; }
-  .blank.revealed { border-bottom-style: solid; color: #1a1a2e; }
-  .blank .num { font-size: 0.75rem; vertical-align: super; line-height: 1; }
-  .answer-key-toggle {
-    margin-top: 1.5rem;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    overflow: hidden;
-  }
-  .answer-key-toggle summary {
-    padding: 0.75rem 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    background: #f8f9fc;
-    font-size: 0.95rem;
-  }
-  .answer-key-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.9rem;
-  }
-  .answer-key-table th {
-    text-align: left;
-    padding: 0.5rem 1rem;
-    background: #f0f4f8;
-    border-bottom: 1px solid #ddd;
-  }
-  .answer-key-table td {
-    padding: 0.5rem 1rem;
-    border-bottom: 1px solid #eee;
-  }
-  .word-class { font-size: 0.8rem; color: #666; font-style: italic; }
-  @media print {
-    body { background: #fff; padding: 0; font-size: 11pt; }
-    .worksheet { box-shadow: none; border-radius: 0; padding: 1.5cm 2cm; max-width: 100%; }
-    .controls { display: none; }
-    .blank { border-bottom: 1.5px solid #333; min-width: 7rem; }
-    @page { size: A4 portrait; margin: 1.5cm 2cm; }
-  }
-</style>
+  <meta charset="UTF-8">
+  <title>Vocabulary Weekly Checks</title>
+  <style>
+    :root {
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #cbd5e1;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --accent-reveal: #059669;
+      --accent-reveal-bg: #ecfdf5;
+      --blank-line: #0f172a;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font-family); background-color: var(--bg); color: var(--text); display: flex; min-height: 100vh; }
+    
+    /* Sidebar */
+    .sidebar { width: 300px; background: #fff; border-right: 1px solid var(--border); padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+    .sidebar h2 { font-size: 1.2rem; margin-bottom: 8px; }
+    .form-group { display: flex; flex-direction: column; gap: 4px; }
+    .form-group label { font-weight: 600; font-size: 0.9rem; }
+    .form-group select { padding: 8px; border: 1px solid var(--border); border-radius: 4px; font-size: 1rem; }
+    
+    /* Main Content */
+    .main-content { flex: 1; padding: 24px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
+    
+    /* Worksheet Styles */
+    .container {
+      width: 100%;
+      max-width: 820px;
+      background: var(--card-bg);
+      padding: 36px 44px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07);
+      border: 1px solid var(--border);
+    }
+    .controls { display: flex; gap: 10px; margin-bottom: 24px; padding-bottom: 18px; border-bottom: 1px solid var(--border); }
+    .btn { padding: 8px 16px; font-size: 0.9rem; font-weight: 600; border-radius: 6px; border: 1px solid transparent; cursor: pointer; transition: all 0.15s; }
+    .btn-secondary { background-color: #ffffff; color: var(--text); border-color: var(--border); }
+    .btn-secondary:hover { background-color: #f1f5f9; }
+    .btn-print { margin-left: auto; background-color: #0f172a; color: #ffffff; }
+    .btn-print:hover { background-color: #334155; }
+    .worksheet-header { margin-bottom: 20px; }
+    .worksheet-title { font-size: 1.45rem; font-weight: 700; text-transform: uppercase; color: #0f172a; margin-bottom: 4px; }
+    .header-bottom { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+    .worksheet-subtitle { font-size: 0.9rem; color: var(--text-muted); }
+    .score-box { font-weight: 600; font-size: 1.05rem; color: #0f172a; }
+    
+    .worksheet-body ol { padding-left: 20px; font-size: 1.05rem; line-height: 1.8; color: #1e293b; }
+    .worksheet-body li { margin-bottom: 28px; padding-left: 8px; }
+
+    .cloze-gap { display: inline-flex; align-items: center; white-space: nowrap; margin: 0 2px; }
+    .blank-placeholder { font-weight: 600; color: var(--blank-line); user-select: none; }
+    .answer-badge { display: none; background-color: var(--accent-reveal-bg); color: var(--accent-reveal); border: 1px solid #a7f3d0; padding: 1px 7px; border-radius: 4px; font-weight: 700; font-size: 0.92rem; margin-left: 3px; }
+    .revealed .blank-placeholder { display: none; }
+    .revealed .answer-badge { display: inline-block; }
+    .toggle-btn { display: inline-flex; align-items: center; justify-content: center; width: 17px; height: 17px; border-radius: 50%; background: #e2e8f0; border: 1px solid #cbd5e1; font-size: 10px; cursor: pointer; margin-left: 4px; user-select: none; }
+    .toggle-btn:hover { background: #cbd5e1; color: #0f172a; }
+    
+    .answer-key-drawer { margin-top: 28px; padding-top: 18px; border-top: 1px dashed var(--border); }
+    .answer-key-drawer summary { cursor: pointer; font-weight: 600; color: #334155; }
+    .answer-key-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 16px; margin-top: 12px; font-size: 0.88rem; background: #f8fafc; padding: 12px 16px; border-radius: 6px; border: 1px solid var(--border); }
+
+    .placeholder-msg { text-align: center; color: var(--text-muted); font-size: 1.1rem; margin-top: 40px; }
+
+    /* Dedicated Print Styles */
+    @media print {
+      @page { size: A4 portrait; margin: 12mm 15mm; }
+      body { background: #ffffff !important; display: block; color: #000 !important; }
+      .sidebar { display: none !important; }
+      .main-content { padding: 0 !important; display: block; }
+      .container { border: none !important; padding: 0 !important; box-shadow: none !important; max-width: 100% !important; background: transparent !important; }
+      .controls, .toggle-btn, .answer-key-drawer { display: none !important; }
+      .answer-badge { display: none !important; } 
+      .blank-placeholder { display: inline !important; color: #000 !important; font-family: monospace; }
+      .worksheet-body ol { font-size: 11pt !important; line-height: 1.6 !important; text-align: justify !important; }
+      .worksheet-body li { margin-bottom: 24px !important; }
+      .worksheet-header { margin-bottom: 12px !important; }
+      .worksheet-title { font-size: 14pt !important; margin-bottom: 2px !important; }
+      .header-bottom { border-bottom: 1px solid #333 !important; padding-bottom: 8px !important; margin-bottom: 12px !important; }
+      .worksheet-subtitle { font-size: 8.5pt !important; }
+      .score-box { font-size: 10pt !important; }
+    }
+  </style>
 </head>
 <body>
-<div class="worksheet">
-  <div class="header">
-    <h1>Boolean Logic · Vocab Check</h1>
-    <span class="score">Score: ___ / 10</span>
+
+  <div class="sidebar no-print">
+    <h2>Select Worksheet</h2>
+    
+    <div class="form-group">
+      <label for="year-select">Year</label>
+      <select id="year-select">
+        <option value="10">Year 10 (KS4 OCR)</option>
+        <option value="11">Year 11 (KS4 OCR)</option>
+        <option value="12">Year 12 (OCR A Level)</option>
+        <option value="13" selected>Year 13 (OCR A Level)</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="term-select">Term</label>
+      <select id="term-select">
+        <option value="1" selected>Term 1</option>
+        <option value="2">Term 2</option>
+        <option value="3">Term 3</option>
+        <option value="4">Term 4</option>
+        <option value="5">Term 5</option>
+        <option value="6">Term 6</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="week-select">Available Lists</label>
+      <select id="week-select">
+        <!-- Dynamically populated -->
+      </select>
+    </div>
   </div>
-  <div class="controls">
-    <button onclick="revealAll()">Reveal All</button>
-    <button onclick="hideAll()">Hide All</button>
-    <button class="print-btn" onclick="window.print()">Print</button>
+
+  <div class="main-content">
+    <div id="worksheet-container">
+      <div class="placeholder-msg">Please select a worksheet from the sidebar.</div>
+    </div>
   </div>
-  <div class="passage" id="passage">
-    <p>Boolean logic is a branch of algebra that uses <span class="blank" data-answer="binary" data-idx="1" onclick="toggleBlank(this)"><span class="num">1.</span> ________</span> values (true/false, 1/0) rather than continuous numbers. A <span class="blank" data-answer="logic gate" data-idx="2" onclick="toggleBlank(this)"><span class="num">2.</span> ________</span> is an electronic component that performs a Boolean operation on one or more inputs to produce a single output. The most fundamental gates are AND, OR and NOT. An AND gate outputs TRUE only when <span class="blank" data-answer="both" data-idx="3" onclick="toggleBlank(this)"><span class="num">3.</span> ________</span> inputs are TRUE; an OR gate outputs TRUE when <span class="blank" data-answer="at least one" data-idx="4" onclick="toggleBlank(this)"><span class="num">4.</span> ________</span> input is TRUE. A NOT gate, sometimes called an <span class="blank" data-answer="inverter" data-idx="5" onclick="toggleBlank(this)"><span class="num">5.</span> ________</span>, simply flips its input. More complex gates include NAND (NOT AND), NOR (NOT OR), and XOR (<span class="blank" data-answer="exclusive OR" data-idx="6" onclick="toggleBlank(this)"><span class="num">6.</span> ________</span>), which outputs TRUE when inputs differ. A <span class="blank" data-answer="truth table" data-idx="7" onclick="toggleBlank(this)"><span class="num">7.</span> ________</span> systematically lists every possible combination of inputs alongside the corresponding output for a given gate or circuit. A Boolean <span class="blank" data-answer="expression" data-idx="8" onclick="toggleBlank(this)"><span class="num">8.</span> ________</span> uses algebraic notation — such as A AND B written as A · B, or A OR B as A + B — to describe logic circuits. A <span class="blank" data-answer="logic circuit" data-idx="9" onclick="toggleBlank(this)"><span class="num">9.</span> ________</span> diagram shows gates connected by wires, often labelled with letters for inputs (A, B, C) and a letter for the output (Q). An expression like Q = NOT (A OR B) is equivalent to Q = A <span class="blank" data-answer="NOR" data-idx="10" onclick="toggleBlank(this)"><span class="num">10.</span> ________</span> B in gate notation.</p>
-  </div>
-  <details class="answer-key-toggle">
-    <summary>Answer Key</summary>
-    <table class="answer-key-table">
-      <thead><tr><th>#</th><th>Answer</th><th>Word Class</th></tr></thead>
-      <tbody>
-        <tr><td>1</td><td>binary</td><td class="word-class">adjective</td></tr>
-        <tr><td>2</td><td>logic gate</td><td class="word-class">noun</td></tr>
-        <tr><td>3</td><td>both</td><td class="word-class">determiner</td></tr>
-        <tr><td>4</td><td>at least one</td><td class="word-class">phrase</td></tr>
-        <tr><td>5</td><td>inverter</td><td class="word-class">noun</td></tr>
-        <tr><td>6</td><td>exclusive OR</td><td class="word-class">noun</td></tr>
-        <tr><td>7</td><td>truth table</td><td class="word-class">noun</td></tr>
-        <tr><td>8</td><td>expression</td><td class="word-class">noun</td></tr>
-        <tr><td>9</td><td>logic circuit</td><td class="word-class">noun</td></tr>
-        <tr><td>10</td><td>NOR</td><td class="word-class">abbreviation</td></tr>
-      </tbody>
-    </table>
-  </details>
-</div>
-<script>
-function toggleBlank(el) {
-  if (el.classList.contains('revealed')) {
-    el.innerHTML = '<span class="num">' + el.dataset.idx + '.</span> ________';
-    el.classList.remove('revealed');
-  } else {
-    el.innerHTML = '<span class="num">' + el.dataset.idx + '.</span> ' + el.dataset.answer;
-    el.classList.add('revealed');
-  }
-}
-function revealAll() {
-  document.querySelectorAll('.blank').forEach(function(el) {
-    if (!el.classList.contains('revealed')) {
-      el.innerHTML = '<span class="num">' + el.dataset.idx + '.</span> ' + el.dataset.answer;
-      el.classList.add('revealed');
+
+  <script>
+    // Database of worksheets
+    const worksheets = {
+      "11": {
+        "1": {
+          "week-1": {
+            title: "Network Security & Penetration Testing",
+            subtitle: "Year 11 • Term 1 • Week 1",
+            sentences: [
+              { text: "It is used to discover weaknesses or #GAP# in a system that could be exploited.", word: "vulnerabilities", type: "noun, plural" },
+              { text: "The tester will use brute force methods and try to #GAP# well-known software flaws to get access to the system.", word: "exploit", type: "verb" },
+              { text: "Traditionally, this is done with a userID and password, but most systems now require two-factor authentication or use #GAP# security measures.", word: "biometric", type: "adjective" },
+              { text: "These organisations have a legal responsibility to keep such data secure by preventing #GAP# access.", word: "unauthorised", type: "adjective" },
+              { text: "A password manager is a piece of software that stores your passwords and most will generate long, #GAP# passwords on demand.", word: "secure", type: "adjective" },
+              { text: "Setting appropriate permissions will help to prevent unauthorised access to #GAP# or important data.", word: "sensitive", type: "adjective" },
+              { text: "In this way, there is less opportunity for the accidental loss of data and fewer accounts to investigate if a system is #GAP#.", word: "compromised", type: "verb, past participle" },
+              { text: "A firewall sits between two networks, usually a trusted network and an untrusted network, and will attempt to prevent #GAP# traffic entering the network.", word: "malicious", type: "adjective" },
+              { text: "In this case, devices should be password protected and all sensitive or important data stored on the device should be #GAP#.", word: "encrypted", type: "verb, past participle" },
+              { text: "If you are unsure whether a file may contain malware, you can #GAP# the file, which will prevent it from infecting any other files or programs.", word: "quarantine", type: "verb" }
+            ]
+          }
+        }
+      },
+      "13": {
+        "1": {
+          "week-1": {
+            title: "Pathfinding & Data Structures",
+            subtitle: "Year 13 • Term 1 • Week 1",
+            sentences: [
+              { text: "Dijkstra’s algorithm operates on a weighted, #GAP# graph where the connections between nodes are called edges.", word: "undirected", type: "adjective" },
+              { text: "The total cost of a path is determined by calculating the sum of all the individual #GAP# assigned to the edges that form the route.", word: "weights", type: "noun, plural" },
+              { text: "The process begins by #GAP# the costs of all unexplored nodes to infinity, indicating that a route to them has not yet been established.", word: "initialising", type: "verb, present participle" },
+              { text: "During each iteration, the procedure picks the current node and examines all of its unvisited #GAP# to evaluate potential routes.", word: "neighbours", type: "noun, plural" },
+              { text: "Once the algorithm completes, you can #GAP# through the list of previous nodes to reconstruct the optimal sequence from the start node.", word: "backtrack", type: "verb" },
+              { text: "Structured English provides a concise method for expressing the steps of an algorithm while avoiding unnecessary #GAP# in the solution.", word: "complexity", type: "noun" },
+              { text: "When implementing the solution in code, a priority #GAP# is commonly used as a data structure to efficiently fetch the next node with the smallest cost.", word: "queue", type: "noun" },
+              { text: "Alternatively, the entire network can be represented using an adjacency #GAP#, which allows direct access to the edge costs between any two intersecting nodes.", word: "matrix", type: "noun" },
+              { text: "Although effective for mapping an entire network, the method can prove highly #GAP# when searching for a route to one specific target node.", word: "inefficient", type: "adjective" },
+              { text: "The core directive of the algorithm is to rigidly follow the shortest path from its unvisited list, regardless of the physical #GAP# to the final target.", word: "proximity", type: "noun" }
+            ]
+          }
+        }
+      }
+    };
+
+    const yearSelect = document.getElementById('year-select');
+    const termSelect = document.getElementById('term-select');
+    const weekSelect = document.getElementById('week-select');
+    const container = document.getElementById('worksheet-container');
+
+    function updateWeekDropdown() {
+      const year = yearSelect.value;
+      const term = termSelect.value;
+      weekSelect.innerHTML = '';
+      
+      if (worksheets[year] && worksheets[year][term]) {
+        const weeks = worksheets[year][term];
+        let i = 1;
+        for (const weekId in weeks) {
+          const option = document.createElement('option');
+          option.value = weekId;
+          option.textContent = `${i}. ${weeks[weekId].title}`;
+          weekSelect.appendChild(option);
+          i++;
+        }
+      }
+
+      if (weekSelect.options.length > 0) {
+        renderWorksheet(year, term, weekSelect.value);
+      } else {
+        const option = document.createElement('option');
+        option.textContent = "No lists available";
+        option.disabled = true;
+        weekSelect.appendChild(option);
+        container.innerHTML = '<div class="placeholder-msg">No worksheets available for this selection.</div>';
+      }
     }
-  });
-}
-function hideAll() {
-  document.querySelectorAll('.blank.revealed').forEach(function(el) {
-    el.innerHTML = '<span class="num">' + el.dataset.idx + '.</span> ________';
-    el.classList.remove('revealed');
-  });
-}
-</script>
+
+    function renderWorksheet(year, term, weekId) {
+      const data = worksheets[year][term][weekId];
+      if (!data) return;
+
+      let html = `
+        <div class="container">
+          <div class="controls no-print">
+            <button class="btn btn-secondary" onclick="revealAll()">Reveal All Answers</button>
+            <button class="btn btn-secondary" onclick="hideAll()">Hide All</button>
+            <button class="btn btn-print" onclick="window.print()">Print Worksheet</button>
+          </div>
+
+          <header class="worksheet-header">
+            <h1 class="worksheet-title">${data.title}</h1>
+            <div class="header-bottom">
+              <p class="worksheet-subtitle">${data.subtitle} • Academic Vocabulary & Context Clues</p>
+              <div class="score-box">Score: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; / 10</div>
+            </div>
+          </header>
+
+          <main class="worksheet-body">
+            <ol>
+      `;
+
+      let answerKeyHtml = '';
+
+      data.sentences.forEach((s, index) => {
+        const gapNum = index + 1;
+        const gapId = 'gap-' + gapNum;
+        const sentenceHtml = s.text.replace('#GAP#', `
+          <span class="cloze-gap" id="${gapId}">
+            <span class="blank-placeholder">[ ${gapNum}. ___________ ]</span>
+            <span class="answer-badge">${s.word}</span>
+            <button type="button" class="toggle-btn no-print" onclick="toggleGap('${gapId}')" title="Reveal/Hide">👁</button>
+          </span>
+        `);
+        
+        html += `<li>${sentenceHtml}</li>`;
+        answerKeyHtml += `<span><strong>${gapNum}.</strong> ${s.word} <em>(${s.type})</em></span>`;
+      });
+
+      html += `
+            </ol>
+          </main>
+          
+          <details class="answer-key-drawer no-print">
+            <summary>Click to view Answer Key & Word Classes</summary>
+            <div class="answer-key-grid">
+              ${answerKeyHtml}
+            </div>
+          </details>
+        </div>
+      `;
+
+      container.innerHTML = html;
+    }
+
+    yearSelect.addEventListener('change', updateWeekDropdown);
+    termSelect.addEventListener('change', updateWeekDropdown);
+    weekSelect.addEventListener('change', () => {
+      renderWorksheet(yearSelect.value, termSelect.value, weekSelect.value);
+    });
+
+    // Helper functions for UI
+    window.toggleGap = function(id) {
+      const gap = document.getElementById(id);
+      if (gap) gap.classList.toggle('revealed');
+    };
+
+    window.revealAll = function() {
+      document.querySelectorAll('.cloze-gap').forEach(gap => gap.classList.add('revealed'));
+    };
+
+    window.hideAll = function() {
+      document.querySelectorAll('.cloze-gap').forEach(gap => gap.classList.remove('revealed'));
+    };
+
+    // Initial load: force defaults to prevent browser cache from showing empty combinations
+    yearSelect.value = "13";
+    termSelect.value = "1";
+    updateWeekDropdown();
+  </script>
 </body>
 </html>
